@@ -1,5 +1,10 @@
 package nz.ac.auckland.se754;
 
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  * USER STORY:
  * <p>
@@ -16,7 +21,9 @@ package nz.ac.auckland.se754;
  * <p>
  * Requirements of password
  * <p>
- * Must have at least 8 characters cannot contain the name of the user
+ * Must have at least 8 characters
+ *
+ * cannot contain the name of the user
  * <p>
  * ACs * <p> - A user should be able to set a password of at least 8 characters [POSITIVE]
  * <p>
@@ -26,5 +33,83 @@ package nz.ac.auckland.se754;
  */
 public class PasswordCheckerTest {
 
+    @Test
+    public void When_PasswordLessThan8chars_Expect_Invalid(){
+       //ARRANGE
+        User user = new User();
+        PasswordChecker checker = new PasswordChecker(user);
+        String pwd = "234";
+        // ACT
+        boolean result = checker.isValid(pwd);
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    public void When_Password8orMoreChars_Expect_Valid(){
+        User user = new User();
+        PasswordChecker checker = new PasswordChecker(user);
+        String pwd = "123456789";
+
+        boolean result = checker.isValid(pwd);
+
+        assertTrue(result);
+    }
+
+
+    @Test
+    public void When_PwdContainsUser_Expect_Invalid(){
+        User user = new User();
+        user.setName("Valerio");
+        PasswordChecker checker = new PasswordChecker(user);
+        String pwd = "Valerio123";
+        boolean result = checker.isValid(pwd);
+        assertFalse(result);
+    }
+
+    @Test
+    public void When_PwdDoesNotContainsUser_Expect_Valid(){
+        User user = new User();
+        user.setName("Valerio");
+        PasswordChecker checker = new PasswordChecker(user);
+        String pwd = "bob12345678";
+        boolean result = checker.isValid(pwd);
+        assertTrue(result);
+    }
+
+   // Passwords cannot be identical to any of the previous three passwords.
+        @Test
+        public void When_PwdSameAsPreviousOne_Expect_Invalid(){
+            User user = new User();
+            user.setName("Valerio");
+            user.addPwd("12345678910");
+            PasswordChecker checker = new PasswordChecker(user);
+            String pwd = "12345678910";
+            boolean result = checker.isValid(pwd);
+            assertFalse(result);
+        }
+
+    @Test
+    public void When_PwdNotTheSameAsPreviousThree_Expect_Valid(){
+        User user = new User();
+        user.setName("Valerio");
+        user.addPwd("12345678910");
+        PasswordChecker checker = new PasswordChecker(user);
+        String pwd = "123456789";
+        boolean result = checker.isValid(pwd);
+        assertTrue(result);
+    }
+
+    @Test
+    public void When_PwdSameAsPreviousTwo_Expect_Invalid(){
+        User user = new User();
+        user.setName("Valerio");
+        user.addPwd("helloworld123");
+        user.addPwd("1234567891");
+        PasswordChecker checker = new PasswordChecker(user);
+        String pwd = "helloworld123";
+        boolean result = checker.isValid(pwd);
+        assertFalse(result);
+    }
 
 }
